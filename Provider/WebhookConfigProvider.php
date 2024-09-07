@@ -2,7 +2,7 @@
 
 namespace Aligent\AsyncEventsBundle\Provider;
 
-use Doctrine\Common\Cache\CacheProvider;
+use Oro\Bundle\CacheBundle\Adapter\ChainAdapter;
 use Oro\Bundle\IntegrationBundle\Entity\Channel;
 use Oro\Bundle\IntegrationBundle\Entity\Transport;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
@@ -26,7 +26,7 @@ class WebhookConfigProvider
     // Cache Keys
     const CONFIG_CACHE_KEY = 'WebhookConfig';
 
-    protected CacheProvider $cache;
+    protected ChainAdapter $cache;
     protected ManagerRegistry $registry;
 
     /**
@@ -34,7 +34,7 @@ class WebhookConfigProvider
      * @param ManagerRegistry $registry
      * @param CacheProvider $cache
      */
-    public function __construct(ManagerRegistry $registry, CacheProvider $cache)
+    public function __construct(ManagerRegistry $registry, ChainAdapter $cache)
     {
         $this->registry = $registry;
         $this->cache = $cache;
@@ -46,9 +46,9 @@ class WebhookConfigProvider
      */
     protected function getWebhookConfig(): array
     {
-        if ($webhookConfig = $this->cache->fetch(self::CONFIG_CACHE_KEY)) {
-            return $webhookConfig;
-        }
+      #  if ($webhookConfig = $this->cache->getItem(self::CONFIG_CACHE_KEY)) {
+      #      return $webhookConfig;
+      #  }
 
         // Get All enabled webhook integrations
         $repo = $this->registry->getRepository(Channel::class);
@@ -65,7 +65,7 @@ class WebhookConfigProvider
         }
 
         $config = $this->normalizeConfig($config);
-        $this->cache->save(static::CONFIG_CACHE_KEY, $config);
+     #   $this->cache->save(static::CONFIG_CACHE_KEY, $config);
         return $config;
     }
 
